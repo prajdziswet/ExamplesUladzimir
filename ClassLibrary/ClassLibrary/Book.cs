@@ -49,5 +49,6 @@ namespace ClassLibrary
         {
             return $"Book \"{ISBN}\" - \"{NameBook}\" - \"{AuthorBook.ArgumentsToString()}\" ";
         }
+
     }
 }

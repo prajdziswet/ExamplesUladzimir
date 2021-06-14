@@ -25,8 +25,7 @@ namespace ClassLibrary.Test
             lib.ReaderBoroweBook(reader.ID, book.NameBook);
 
             lib.GetReader(reader.ID).BorrowedBooks.Count.ShouldBe(1);
-            lib.GetReader(reader.ID).BorrowedBooks[0].ShouldBe(book);
-
+            lib.GetReader(reader.ID).BorrowedBooks[0].book.ShouldBe(book);
         }
 
         [Test]
@@ -40,6 +39,8 @@ namespace ClassLibrary.Test
 
             Reader reader = new Reader("Ivan", "Ivanov");
             Should.Throw<ArgumentException>(() => lib.ReaderBoroweBook(reader.ID, book.NameBook)).Message.ShouldBe($"Not Exist Reader with (ID={reader.ID}) in DepartmentReaders");
+            //for return book
+            Should.Throw<ArgumentException>(() => lib.ReaderReturnBook(reader.ID, book.ID)).Message.ShouldBe($"Not Exist Reader with (ID={reader.ID}) in DepartmentReaders");
         }
 
         [Test]
@@ -92,7 +93,7 @@ namespace ClassLibrary.Test
             lib.ReaderBoroweBook(reader1.ID, book1.NameBook);
             lib.ReaderBoroweBook(reader2.ID, book2.NameBook);
 
-            Should.Throw<ArgumentException>(() => lib.ReaderBoroweBook(reader3.ID, book1.NameBook)).Message.ShouldBe("ALL books borrowed");
+            Should.Throw<ArgumentException>(() => lib.ReaderBoroweBook(reader3.ID, book1.NameBook)).Message.ShouldContain("days when the nearest book is free");
         }
 
         [Test]

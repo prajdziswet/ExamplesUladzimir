@@ -22,8 +22,9 @@ namespace ClassLibrary
             private set;
         }
 
-        private List<Book> borrowedBooks = new List<Book>();
-        public IReadOnlyList<Book> BorrowedBooks
+        private List<BorrowedBook> borrowedBooks = new List<BorrowedBook>();
+
+        public IReadOnlyList<BorrowedBook> BorrowedBooks
         => borrowedBooks.AsReadOnly();
 
         private static int Count
@@ -52,16 +53,30 @@ namespace ClassLibrary
 
         internal void AddBookInCard(Book book)
         {
-            var findBook = BorrowedBooks.FirstOrDefault(x => x.ISBN==book.ISBN);
+            var findBook = BorrowedBooks.FirstOrDefault(x => x.book.ISBN==book.ISBN);
             if (findBook != null)
             {
                 throw new ArgumentException("you have already taken simular book");
             }
             else
             {
-                borrowedBooks.Add(book);
+                borrowedBooks.Add(new BorrowedBook(book)); 
             }
 
+        }
+
+        internal void DeleteBookInCard(int ID_Book)
+        {
+            var findBook= BorrowedBooks.FirstOrDefault(x => x.book.ID== ID_Book);
+
+            if (findBook == null)
+            {
+                throw new ArgumentException("you didn't take this book");
+            }
+            else
+            {
+                borrowedBooks.Remove(findBook);
+            }
         }
 
         public String ArgumentsToString()

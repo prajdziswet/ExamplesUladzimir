@@ -39,7 +39,7 @@ namespace ClassLibrary
 
         public bool CheckBorrowedBook(int IDBook)
         {
-            Book borrowedBook = Readers.SelectMany(x => x.BorrowedBooks).FirstOrDefault(x=>x.ID==IDBook);
+            BorrowedBook borrowedBook = Readers.SelectMany(x => x.BorrowedBooks)?.FirstOrDefault(x=>x?.book.ID==IDBook);
             return borrowedBook != null;
         }
 
@@ -48,9 +48,20 @@ namespace ClassLibrary
             return BorrowedBooksWithISBN(ISBN).Count;
         }
 
-        public HashSet<Book> BorrowedBooksWithISBN(String ISBN)
+        public List<BorrowedBook> BorrowedBooksWithISBN(String ISBN)
         {
-            return new HashSet<Book>(Readers.SelectMany(x => x.BorrowedBooks.Where(y => y.ISBN == ISBN)));
+            return Readers.SelectMany(x => x.BorrowedBooks.Where(y => y.book.ISBN == ISBN)).ToList();
+        }
+
+        public DateTime? GetDayWhenFreeBook(List<BorrowedBook> borrowedBooksISBN)
+        {
+            if (borrowedBooksISBN==null||borrowedBooksISBN.Count==0)
+            {
+                throw new ArgumentNullException(nameof(borrowedBooksISBN), "In DepartmentReaders.GetTimeWhenFreeBook");
+            }
+            DateTime timeNow = DateTime.Now;
+
+            return borrowedBooksISBN.Where(book => book.dateTimeReturn >= timeNow).Select(book => book.dateTimeReturn).Min();
         }
 
         public bool CheckReader(Reader reader)
@@ -81,5 +92,16 @@ namespace ClassLibrary
 
             reader.AddBookInCard(book);
         }
+
+        public void ReturnBook(int IDReader, int ID_Book)
+        {
+            Reader reader = GetReader(IDReader);
+            if (reader == null)
+            {
+                throw new ArgumentException($"Not Exist Reader with (ID={IDReader}) in DepartmentReaders");
+            }
+                reader.DeleteBookInCard(ID_Book);        
+        }
+
     }
 }
